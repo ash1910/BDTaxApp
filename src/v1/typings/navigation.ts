@@ -18,6 +18,8 @@ export enum APP_NAVIGATION {
   ACKNOWLEDGEMENT = 'ACKNOWLEDGEMENT',
   UserFormSelection = 'UserFormSelection',
   CHAT = 'CHAT',
+  ORDERSTATUS = 'ORDERSTATUS',
+  SIGNATURE = 'SIGNATURE',
 }
 
 export type AppNavigationParams = {
@@ -26,6 +28,8 @@ export type AppNavigationParams = {
   [APP_NAVIGATION.ACKNOWLEDGEMENT]: undefined;
   [APP_NAVIGATION.UserFormSelection]: undefined;
   [APP_NAVIGATION.CHAT]: undefined;
+  [APP_NAVIGATION.ORDERSTATUS]: undefined;
+  [APP_NAVIGATION.SIGNATURE]: undefined;
 };
 
 export enum AUTH_NAVIGATION {

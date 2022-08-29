@@ -1,12 +1,13 @@
 import {Box, Button, Divider, VStack} from 'native-base';
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import {Alert, Platform, ScrollView, Linking} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 //import useCamera from '../../../../hooks/useCamera';
 import useImagePicker from '../../../../hooks/useImagePicker';
 import FileImages from './FileImages';
 import * as DocumentPicker from 'expo-document-picker';
 import { getFiles, setFiles, removeFile, updateCurrentUser } from "../../../../functions/auth";
-import { getFileTypes, saveFile, deleteFile, getDownloadUserFile, getTaxAmount } from "../../../../requests/User";
+import { getFileTypes, saveFile, deleteFile, getDownloadUserFile, getTaxAmount, getSignature } from "../../../../requests/User";
 import { AuthContext } from "../../../../providers/AuthProvider";
 
 import * as ImagePicker from 'expo-image-picker';
@@ -15,6 +16,7 @@ import { manipulateAsync, FlipType, SaveFormat } from 'expo-image-manipulator';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
+import { APP_NAVIGATION } from '../../../../typings/navigation';
 
 
 type Props = {
@@ -31,6 +33,7 @@ const UploadFiles = ({onComplete, onLoading : setLoading, navigation}: Props) =>
   const [uploadKey, setUploadKey] = useState(undefined);
   const [uploadPosition, setUploadPosition] = useState(undefined);
   const [isMinOneFileUploaded, setIsMinOneFileUploaded] = useState(false);
+  const [signature, setSignature] = useState(undefined);
 
   let isMounted = true;
 
@@ -76,6 +79,23 @@ const UploadFiles = ({onComplete, onLoading : setLoading, navigation}: Props) =>
     }
   };
 
+  const loadSignature = async () => {
+    setLoading(true);
+    let response = await getSignature();
+    //alert(JSON.stringify(response, null, 5))
+    if (response.ok && response.data && response.data?.success == true) {
+      if (isMounted){
+        setSignature(response.data?.data?.signatture);
+      }
+    }
+    else{
+      Alert.alert("",response.data.message?.error);
+    }
+    if (isMounted){
+      setLoading(false);
+    }
+  };
+
   const loadTaxAmount = async() => {
     let response = await getTaxAmount();
     //alert(JSON.stringify(response, null, 5))
@@ -98,6 +118,16 @@ const UploadFiles = ({onComplete, onLoading : setLoading, navigation}: Props) =>
     loadTaxAmount();
     return () => { isMounted = false };
   }, [navigation]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      isMounted = true;
+
+      loadSignature();
+
+      return () => { isMounted = false };
+    }, [])
+  );
 
   const submitFile = async (file_type, file_obj, position) =>  {
     setLoading(true);
@@ -213,8 +243,12 @@ const UploadFiles = ({onComplete, onLoading : setLoading, navigation}: Props) =>
     }
   };
 
-  const takePicture = async (key: number, position: number, showPdf: number) => {
+  const takePicture = async (key: number, position: number, showPdf: number, isSignature: number) => {
     //console.log(position, 'position');
+    if( isSignature == 1 ){
+      navigation.navigate(APP_NAVIGATION.SIGNATURE);
+      return;
+    }
     setUploadKey(key);
     setUploadPosition(position);
 
@@ -398,9 +432,11 @@ const UploadFiles = ({onComplete, onLoading : setLoading, navigation}: Props) =>
                         fileKey={y.id}
                         filePosition={filePosition}
                         showPdf={y.show_pdf}
+                        isSignature={y.is_signature}
+                        signature={signature}
                         localFiles={localFiles}
                         files={y.user_file || []}
-                        onTakePicturePress={(key, filePosition, showPdf) => takePicture(key, filePosition, showPdf)}
+                        onTakePicturePress={(key, filePosition, showPdf, isSignature) => takePicture(key, filePosition, showPdf, isSignature)}
                         buttonText={y.title}
                         onDeletePicturePress={handleDeletePicture}
                         onDownloadFilePress={handleDownloadFile}

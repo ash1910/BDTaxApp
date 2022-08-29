@@ -38,6 +38,10 @@ const ProfileScreen = (props) => {
           onPress={() => props.navigation.navigate(APP_NAVIGATION.ACKNOWLEDGEMENT)}>
           {auth?.CurrentUser?.tax_year ? `Acknowledgement Slip (${auth?.CurrentUser?.tax_year})` : "Acknowledgement Slip"}
         </Button>
+        <Button
+          onPress={() => props.navigation.navigate(APP_NAVIGATION.ORDERSTATUS)}>
+          {auth?.CurrentUser?.tax_year ? `Order Status (${auth?.CurrentUser?.tax_year})` : "Order Status"}
+        </Button>
         <Button onPress={() => {
           let ret = doLogout(auth, props);
           if(ret) Alert.alert("","Logout successfully.");

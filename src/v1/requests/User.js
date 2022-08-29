@@ -181,24 +181,24 @@ const sendUserFormSelectionType = (type) => {
 };
 
 const getTaxZoneCircles = () => {
-  return R3Client.get("get-zone-cricle");
+  return R3Client.get("get-zone-cricle-by-city");
+};
+
+const getOrderStatus = () => {
+  return R3Client.get("get-order-status");
+};
+
+const saveSignature = async(signature) => {
+  const formData = new FormData();
+  formData.append('signature', signature);
+
+  return R3Client.post("save-user-signature", formData);
+};
+
+const getSignature = () => {
+  return R3Client.get("get-user-signature");
 };
 
 
-const getAdminUser = () => {
-  return R3ClientWithoutAuth.post(login_endpoint, 
-    { 
-      username: "course@r3medicaltraining.com",
-      password: "e1234",
-    }
-  );
-};
 
-const account_endpoint = "ps-event/v1/events/me/";
-const getAccount = (user_id) => {
-  return R3Client.get(`${account_endpoint}${user_id}`);
-};
-
-
-
-export { getUser, getRegister, getForgotPassword, getConfirmPassword, getDivisions, getProfile, getAreas, saveProfile, getFileTypes, saveFile, deleteFile, getPackages, getReloadPaymentGateway, getTaxAmount, getAckFile, getDownloadFile, saveConsent, getDownloadUserFile, getValidateEmail, sendUserFormSelectionQA, sendUserFormSelectionType, getTaxZoneCircles, getAdminUser, getAccount };
+export { getUser, getRegister, getForgotPassword, getConfirmPassword, getDivisions, getProfile, getAreas, saveProfile, getFileTypes, saveFile, deleteFile, getPackages, getReloadPaymentGateway, getTaxAmount, getAckFile, getDownloadFile, saveConsent, getDownloadUserFile, getValidateEmail, sendUserFormSelectionQA, sendUserFormSelectionType, getTaxZoneCircles, getOrderStatus, saveSignature, getSignature };

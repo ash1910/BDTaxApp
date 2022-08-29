@@ -36,8 +36,8 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
   const [divisions, setDivisions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [areas, setAreas] = useState([]);
-  const [circles, setCircles] = useState([]);
-  const [zones, setZones] = useState([]);
+  const [circles, setCircles] = useState({});
+  const [zones, setZones] = useState({});
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showEmail, setShowEmail] = useState(true);
   const [showETIN, setShowETIN] = useState(true);
@@ -110,18 +110,21 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
     //alert(JSON.stringify(response, null, 5))
     if (response.ok && response.data && response.data?.success == true) {
       if (isMounted){
-        let taxCircleList = response.data.data?.circles || [];
-        let taxZoneList = response.data.data?.zones || [];
-        let zoneList = [];
-        let circleList = [];
-        for(var key in taxCircleList) {
-          circleList.push(taxCircleList[key]);
-        }
-        for(var key in taxZoneList) {
-          zoneList.push(taxZoneList[key]);
-        }
-        await setCircles(circleList);
-        await setZones(zoneList);
+        // let taxCircleList = response.data.data?.circles || [];
+        // let taxZoneList = response.data.data?.zones || [];
+        // let zoneList = [];
+        // let circleList = [];
+        // for(var key in taxCircleList) {
+        //   circleList.push(taxCircleList[key]);
+        // }
+        // for(var key in taxZoneList) {
+        //   zoneList.push(taxZoneList[key]);
+        // }
+        // await setCircles(circleList);
+        // await setZones(zoneList);
+
+        await setCircles(response.data.data?.circles || {});
+        await setZones(response.data.data?.zones || {});
       }
     }
   };
@@ -497,7 +500,7 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
           borderColor="gray.300"
           onValueChange={itemValue => formik.setFieldValue('TaxesCircle', itemValue)}
           >
-            {circles?.map(x => {
+            {circles[formik.values.AreaOfResidence]?.map(x => {
               return (
                 <Select.Item
                   label={String(x)}
@@ -527,7 +530,7 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
           borderColor="gray.300"
           onValueChange={itemValue => formik.setFieldValue('TaxesZone', itemValue)}
           >
-            {zones?.map(x => {
+            {zones[formik.values.AreaOfResidence]?.map(x => {
               return (
                 <Select.Item
                   label={String(x)}

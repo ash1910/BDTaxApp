@@ -11,9 +11,11 @@ type Props = {
   fileKey: number;
   filePosition: number;
   showPdf: number;
+  isSignature: number;
+  signature: string;
   files: array;
   localFiles: array;
-  onTakePicturePress: (fileKey: number, filePosition: number, showPdf: number) => void;
+  onTakePicturePress: (fileKey: number, filePosition: number, showPdf: number, isSignature: number) => void;
   onDeletePicturePress: (fileKey: string, index: number) => void;
   onDownloadFilePress: (fileKey: string, file_type: string) => void;
   buttonText: string;
@@ -23,6 +25,8 @@ const FileImages = ({
   fileKey,
   filePosition,
   showPdf,
+  isSignature,
+  signature,
   files,
   localFiles,
   onTakePicturePress,
@@ -37,7 +41,7 @@ const FileImages = ({
         horizontal
         contentContainerStyle={{flexGrow: 1, justifyContent: 'center'}}>
         <HStack justifyContent={'center'} my={3} space={2} key={`FIHS1${fileKey}`}>
-          <TouchableOpacity key={`FITO${fileKey}`} onPress={() => onTakePicturePress(fileKey, filePosition, showPdf)}>
+          <TouchableOpacity key={`FITO${fileKey}`} onPress={() => onTakePicturePress(fileKey, filePosition, showPdf, isSignature)}>
             <View
               key={`FIV1${fileKey}`}
               style={{
@@ -57,6 +61,20 @@ const FileImages = ({
               />
             </View>
           </TouchableOpacity>
+
+          { (isSignature == 1 && signature != "") &&
+            <VStack key={`FIVS1S`} alignItems={'center'} space={0}>
+                <Image
+                    key={`FIIM2S`}
+                    source={{uri: signature}}
+                    style={{
+                      height: 120,
+                      width: 120,
+                      resizeMode: 'contain',
+                    }}
+                />
+            </VStack>
+          }
 
           {files.map(file => {
             let previewUrl = localFiles[file.id] ? localFiles[file.id] : "";

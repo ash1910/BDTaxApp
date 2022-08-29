@@ -8,6 +8,9 @@ import {Box, StatusBar} from 'native-base';
 import Acknowledgement from './acknowledgement';
 import UserFormSelectionScreen from './userFormSelection';
 import ChatScreen from './chat';
+import OrderStatus from './orderStatus';
+import SignaturePage from './signature';
+import Sign from './signature/signature';
 import { AuthContext } from "../../providers/AuthProvider";
 
 const Stack = createStackNavigator();
@@ -36,6 +39,14 @@ const App = () => {
               name={APP_NAVIGATION.CHAT}
               component={ChatScreen}
               // options={{presentation: "modal"}}
+            />
+            <Stack.Screen
+              name={APP_NAVIGATION.ORDERSTATUS}
+              component={OrderStatus}
+            />
+            <Stack.Screen
+              name={APP_NAVIGATION.SIGNATURE}
+              component={Sign}
             />
             </>
           )}
