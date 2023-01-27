@@ -199,6 +199,20 @@ const getSignature = () => {
   return R3Client.get("get-user-signature");
 };
 
+const saveCouponCode = (code) => {
+  return R3Client.post("save-coupon", 
+    { 
+      code,
+    }
+  );
+};
 
+const getPaymentMessage = () => {
+  return R3Client.get("get-payment-message");
+};
 
-export { getUser, getRegister, getForgotPassword, getConfirmPassword, getDivisions, getProfile, getAreas, saveProfile, getFileTypes, saveFile, deleteFile, getPackages, getReloadPaymentGateway, getTaxAmount, getAckFile, getDownloadFile, saveConsent, getDownloadUserFile, getValidateEmail, sendUserFormSelectionQA, sendUserFormSelectionType, getTaxZoneCircles, getOrderStatus, saveSignature, getSignature };
+const userUnsubscribe = () => {
+  return R3Client.post("user/unsubscribe");
+};
+
+export { getUser, getRegister, getForgotPassword, getConfirmPassword, getDivisions, getProfile, getAreas, saveProfile, getFileTypes, saveFile, deleteFile, getPackages, getReloadPaymentGateway, getTaxAmount, getAckFile, getDownloadFile, saveConsent, getDownloadUserFile, getValidateEmail, sendUserFormSelectionQA, sendUserFormSelectionType, getTaxZoneCircles, getOrderStatus, saveSignature, getSignature, saveCouponCode, getPaymentMessage, userUnsubscribe };

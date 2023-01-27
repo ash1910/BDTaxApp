@@ -2,6 +2,7 @@ import {Button, VStack, Box} from 'native-base';
 import {TouchableOpacity, Image, Alert} from 'react-native';
 import React, {useContext} from 'react';
 import {useNavigation} from '@react-navigation/native';
+import { userUnsubscribe } from "../../../requests/User";
 
 import {APP_NAVIGATION} from '../../../typings/navigation';
 import { doLogout } from "../../../functions/auth";
@@ -12,6 +13,38 @@ import {width, height} from '../../../utils/validator';
 const ProfileScreen = (props) => {
   let auth = useContext(AuthContext);
   const navigation = useNavigation();
+
+  const handleUnsubscribe = () => {
+
+    Alert.alert(
+      'Unsubscribe',
+      'Are you sure to unsubscribe account?',
+      [
+        {
+          text: 'Yes',
+          onPress: async() => {
+            let response = await userUnsubscribe();
+            if (response.ok && response.data && response.data?.success == true) {
+              Alert.alert('Unsubscribe', response.data?.message);
+              let ret = doLogout(auth, props);
+            }
+            else{
+              Alert.alert("",response.data.message);
+            }
+          },
+        },
+        {
+          text: 'No',
+          onPress: () => {
+            console.log('We are doing nothing');
+          },
+        },
+      ],
+      {
+        cancelable: true,
+      },
+    );
+  };
 
   return (
     <VStack flex={1} space={2}>
@@ -42,6 +75,7 @@ const ProfileScreen = (props) => {
           onPress={() => props.navigation.navigate(APP_NAVIGATION.ORDERSTATUS)}>
           {auth?.CurrentUser?.tax_year ? `Order Status (${auth?.CurrentUser?.tax_year})` : "Order Status"}
         </Button>
+        <Button onPress={() => handleUnsubscribe() }>Unsubscribe</Button>
         <Button onPress={() => {
           let ret = doLogout(auth, props);
           if(ret) Alert.alert("","Logout successfully.");

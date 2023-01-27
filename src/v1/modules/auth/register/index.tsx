@@ -245,6 +245,7 @@ const Register = (props) => {
           >
             <Select.Item label="Facebook" value="Facebook" />
             <Select.Item label="Google" value="Google" />
+            <Select.Item label="Youtube" value="Youtube" />
             <Select.Item label="Twitter" value="Twitter" />
             <Select.Item label="LinkedIn" value="LinkedIn" />
             <Select.Item label="Blog" value="Blog" />

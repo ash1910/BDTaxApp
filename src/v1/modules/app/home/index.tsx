@@ -105,7 +105,7 @@ const HomeScreen = ({navigation}: Props) => {
          }
 
         <Text flex={1} color={'white'} fontSize={'lg'} ml={2}>
-          Tax Owed: {auth?.CurrentUser?.tax_amount || '0.00'} BDT
+          Tax Due Amount: {auth?.CurrentUser?.tax_amount || '0.00'} BDT
         </Text>
         <HStack space={4}>
         {!showChat ? (

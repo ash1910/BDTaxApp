@@ -1,4 +1,4 @@
-import {Box, Button, Divider, HStack, VStack, Checkbox, Radio, Text, Center} from 'native-base';
+import {Box, Button, Divider, HStack, VStack, Checkbox, Radio, Text, Center, Input} from 'native-base';
 import React, {useRef, useState, useEffect, useContext} from 'react';
 import {Alert, ScrollView, View, Image, Modal, StyleSheet, ActivityIndicator, Linking} from 'react-native';
 import {width, height} from '../../../../utils/validator';
@@ -6,7 +6,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {icons} from '../../../../assets/icons';
 import { Feather } from "@expo/vector-icons";
 import { updateCurrentUser } from "../../../../functions/auth";
-import { getPackages, getReloadPaymentGateway, getTaxAmount } from "../../../../requests/User";
+import { getPackages, getReloadPaymentGateway, getTaxAmount, saveCouponCode, getPaymentMessage } from "../../../../requests/User";
 import PaymentGateway from '../PaymentGateway';
 import { AuthContext } from "../../../../providers/AuthProvider";
 import {WebView} from "react-native-webview";
@@ -33,6 +33,7 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
   const [termAgree, setTermAgree] = useState(false);
   const [userCurrentPackageMessage, setUserCurrentPackageMessage] = useState(undefined);
   const [modalVisible, setModalVisible] = useState(false);
+  const [learnMoreModalVisible, setLearnMoreModalVisible] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
   const [showBasic, setShowBasic] = useState(true);
   const [textThankYou, setTextThankYou] = useState([]);
@@ -43,6 +44,16 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
   const [bBtn2Link, setBBtn2Link] = useState(undefined);
   const [cBtn1Title, setCBtn1Title] = useState(undefined);
   const [illegibleForPayment, setIllegibleForPayment] = useState(undefined);
+  const [couponCode, setCouponCode] = useState("");
+  const [enableCouponCode, setEnableCouponCode] = useState(0);
+  const [discountText, setDiscountText] = useState("");
+  const [discountApplied, setDiscountApplied] = useState(0);
+  const [learnMoreLink, setLearnMoreLink] = useState("https://www.bdtax.com.bd/learn_more.html");
+  const [termLink, setTermLink] = useState("https://www.bdtax.com.bd/site/temrs");
+  const [modalWebviewLink, setModalWebviewLink] = useState("term");
+  const [learnMoreHeader, setLearnMoreHeader] = useState("");
+  const [learnMorePara, setLearnMorePara] = useState([]);
+  const [learnMoreList, setLearnMoreList] = useState([]);
 
   let isMounted = true;
 
@@ -83,6 +94,15 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
         setUserCurrentPackageMessage(response.data.data?.user_current_package_message || "");
         setTermAgree(false);
         setIllegibleForPayment(response.data.data?.illegible_for_payment || undefined);
+
+        setCouponCode(response.data.data?.coupon_code || "");
+        setEnableCouponCode(response.data.data?.enable_coupon || 0);
+        setDiscountText(response.data.data?.discount_text || "");
+        setDiscountApplied(response.data.data?.discount_applied || 0);
+        setLearnMoreLink(response.data.data?.learn_more_link || "");
+        setLearnMoreHeader(response.data.data?.learn_more_header || "");
+        setLearnMorePara(response.data.data?.learn_more_para || []);
+        setLearnMoreList(response.data.data?.learn_more_list || []);
 
         // test thank you page
         // setShowBasic(false);
@@ -137,6 +157,27 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
     onComplete();
   };
 
+  const handleSubmitCouponCode = async() => {
+    if(!couponCode){
+      Alert.alert("","Please enter coupon code.");
+      return;
+    } 
+    console.log('coupon code', couponCode);
+    setLoading(true);
+    //console.log(values, "values")
+    let response = await saveCouponCode(couponCode);
+    //alert(JSON.stringify(response, null, 5))
+    setLoading(false);
+    if (response.ok && response.data && response.data?.success == true) {
+      Alert.alert("",response.data?.message);
+
+      await loadPackages();
+    } else {
+      Alert.alert("",response.data?.message);
+    }
+
+  }
+
   const goToPayment = (payment_gateway) => {
     console.log(nextPlan, "nextPlan");
     if( parseInt(nextPlan) <= 0){
@@ -165,7 +206,7 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
   const loadTaxAmount = async(get_latest_data = null) => {
     let currentOrderAmount = await auth?.CurrentUser?.order_amount;
     let response = await getTaxAmount();
-    //alert(JSON.stringify(response, null, 5))
+    //alert(JSON.stringify(responsePM, null, 5))
     if (response.ok && response.data && response.data?.success == true) {
       if (isMounted){
         let order_amount = parseInt(response.data.data?.order_amount);
@@ -184,13 +225,16 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
               setShowBasic(true);
               setTextThankYou(textThankYouB); 
             }
+            let responsePM = await getPaymentMessage(); // no need -- just for deleting message from server
           }
 
           await updateCurrentUser({order_amount: response.data.data?.order_amount, file_upload_option : response.data.data?.file_upload_option}, auth);
         }
         else{
           if( get_latest_data == null ){
-            Alert.alert("","Your payment did not go through.");
+            let responsePM = await getPaymentMessage();
+            Alert.alert("",responsePM.data?.data?.payment_msg);
+            //Alert.alert("","Your payment did not go through.");
           }
         }
         await updateCurrentUser({tax_amount: response.data.data?.tax_amount}, auth);
@@ -359,7 +403,61 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
                 </HStack>
               </Box>
             }
+            {discountApplied == 1 &&               
+              <Box flex={1}>
+                <Divider orientation={'horizontal'} />
+                <HStack space={3} pl={5} mt={3}>
+                  <Text width={width * .68} textAlign={'right'}>Discount :</Text>
+                  <Text textAlign={'right'} key={discountText}>{discountText}</Text>
+                </HStack>
+              </Box>
+            }
             <Divider orientation={'horizontal'} />
+            {enableCouponCode == 1 && 
+            <VStack flex={1} mx={5} my={3} space={1}>
+              <HStack>
+                <Text color={"rgb(242,72,65)"} fontWeight={'bold'} fontSize={16}>Coupon Code</Text>
+                <Text color={'success.500'} fontWeight={'bold'} fontSize={12} ml={8} mt={1} onPress={() => setLearnMoreModalVisible(true) }>Learn More</Text>
+                <Modal visible={learnMoreModalVisible}>
+                    <View style={styles.modal}>
+                        <View style={styles.modalContainer}>
+                            <Box bgColor={'rgb(10,101,12)'} p={4}>
+                              <Text color={'white'} fontWeight={'bold'} fontSize={16}>{learnMoreHeader}</Text>
+                            </Box>
+                            <ScrollView ref={scrollView}>
+                              <Box p={4}>
+                              {learnMorePara?.map(line => {
+                                return (
+                                    <Text fontSize={17} pb={2}>{line.text}</Text>
+                                )
+                              })}
+                              {learnMoreList?.map(line => {
+                                return (
+                                    <Text fontSize={15} pb={1}>&#8226; {line.text}</Text>
+                                )
+                              })}
+                              </Box>
+                            </ScrollView>
+                            <Box bgColor={'rgb(10,101,12)'} borderRadius={5} p={4} m={4} position={'absolute'} bottom={0} right={0}>
+                              <Text textAlign={'center'} color={'white'} fontWeight={'bold'} fontSize={16} onPress={() => setLearnMoreModalVisible(!learnMoreModalVisible)}>Close</Text>
+                            </Box>
+                        </View>
+                    </View>
+                </Modal>
+              </HStack>
+              <HStack>
+                <Input 
+                  width={width * .6} 
+                  mr={3} 
+                  placeholder={"Enter Coupon Code Here"} 
+                  height={9}
+                  value={couponCode}
+                  onChangeText={val => setCouponCode(val)}></Input>
+                <Button py={1} onPress={handleSubmitCouponCode}>Apply</Button>
+              </HStack>
+            </VStack>
+            }
+
           {parseInt(nextPlan) > 0 && 
             <Box flex={1} pl={5} pr={5}>
               <Box my={3}>
@@ -371,7 +469,7 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
                   >
                   </Checkbox>
                   
-                    <Text mt={-1} mr={2}><Text>By checking this box you agree to our </Text><Text color="success.500" onPress={() => setModalVisible(true)}>Terms and Conditions.</Text></Text>
+                    <Text mt={-1} mr={2}><Text>By checking this box you agree to our </Text><Text color="success.500" onPress={() => {setModalWebviewLink("term"); setModalVisible(true)}}>Terms and Conditions.</Text></Text>
                   
                 </HStack>
                 <Text mt={3}>Please select your payment method by clicking on the payment icon below</Text>
@@ -381,7 +479,7 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
                             <WebView 
                                 renderLoading={ActivityIndicatorLoadingView}
                                 style={{ flex : 1 }} 
-                                source={{uri: 'https://www.bdtax.com.bd/site/temrs'}}
+                                source={{uri: modalWebviewLink == 'learnmore' ? learnMoreLink : termLink}}
                             />
                             <Button onPress={() => setModalVisible(!modalVisible)}>Close</Button>
                         </View>
@@ -472,25 +570,6 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
         </>
       )}
       </ScrollView>
-      
-      {/* { showThankYou ? (
-        <HStack m={4} space={4}>
-        { showBasic ? (
-          <>
-            <Button flex={1} _text={{'textAlign' : 'center'}} onPress={() => setShowThankYou(false)} >{bBtn1Title}</Button>
-            <Button flex={1} _text={{'textAlign' : 'center'}} onPress={() => Linking.openURL(`${bBtn2Link}`)} >{bBtn2Title}</Button>
-          </>
-          ) : (
-            <Button flex={1} _text={{'textAlign' : 'center', 'fontWeight' : 'bold', 'fontSize': 'md'}} onPress={handleSubmit} >{cBtn1Title}</Button>
-        )}
-        </HStack>
-      ) : (
-        <></>
-      //   <HStack m={4} space={4}>
-      //     <Button isDisabled={!buttonEnabled} onPress={handleSubmit} flex={1}>Next</Button>
-      // </HStack>
-      )} */}
-      
     </VStack>
     ) : (
     <Box flex={1}>

@@ -1,10 +1,11 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Alert} from 'react-native';
+import {Alert, Linking} from 'react-native';
 //import {useDispatch, useSelector} from 'react-redux';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Feather } from "@expo/vector-icons";
+import * as Application from 'expo-application';
 
 import {
   Button,
@@ -42,6 +43,10 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
   const [showEmail, setShowEmail] = useState(true);
   const [showETIN, setShowETIN] = useState(true);
   const [showMobile, setShowMobile] = useState(true);
+  const [gShowUpdateWarning, setGShowUpdateWarning] = useState(0);
+  const [gUpdateWarning, setGUpdateWarning] = useState("");
+  const [gCurrentAppVersion, setGCurrentAppVersion] = useState("");
+  const [gUpdateLink, setGUpdateLink] = useState("");
 
   let isMounted = true;
   const loadDivisions = async () => { 
@@ -74,6 +79,7 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
     }
   };
   const loadProfile = async () => {
+    //console.log(Application.nativeApplicationVersion)
     setLoading(true);
     let response = await getProfile();
     //alert(JSON.stringify(response, null, 5))
@@ -83,7 +89,9 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
         if(response.data.data?.mobile_status == 0) setShowMobile(false);
         if(response.data.data?.email_status == 0) setShowEmail(false);
         
-        setProfile(response.data.data);
+        await setProfile(response.data.data);
+
+        checkAppVersion(response.data.data);
       }
     }
     if (isMounted){
@@ -110,19 +118,6 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
     //alert(JSON.stringify(response, null, 5))
     if (response.ok && response.data && response.data?.success == true) {
       if (isMounted){
-        // let taxCircleList = response.data.data?.circles || [];
-        // let taxZoneList = response.data.data?.zones || [];
-        // let zoneList = [];
-        // let circleList = [];
-        // for(var key in taxCircleList) {
-        //   circleList.push(taxCircleList[key]);
-        // }
-        // for(var key in taxZoneList) {
-        //   zoneList.push(taxZoneList[key]);
-        // }
-        // await setCircles(circleList);
-        // await setZones(zoneList);
-
         await setCircles(response.data.data?.circles || {});
         await setZones(response.data.data?.zones || {});
       }
@@ -139,16 +134,38 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
     }
   };
 
-  // useEffect(() => {
-  //   isMounted = true;
-
-  //   if(isMounted){
-  //     if(profile?.etin_status == 0) setShowETIN(false);
-  //     if(profile?.mobile_status == 0) setShowMobile(false);
-  //     if(profile?.email_status == 0) setShowEmail(false);
-  //   }
-  //   return () => { isMounted = false };
-  // }, [profile]);
+  const checkAppVersion = (profileData) => {
+      let g_update_warning = profileData?.upgrade_status?.g_update_warning ?? ""
+      let g_update_link = profileData?.upgrade_status?.g_update_link ?? ""
+      let g_show_update_warning = profileData?.upgrade_status?.g_show_update_warning ?? 0
+      let g_current_app_version = profileData?.upgrade_status?.g_current_app_version ? profileData?.upgrade_status?.g_current_app_version.split('.').join("") : ""
+      let nativeApplicationVersion = Application.nativeApplicationVersion ? Application.nativeApplicationVersion.split('.').join("") : ""
+      console.log("nativeApplicationVersion", nativeApplicationVersion)
+      console.log("g_current_app_version", g_current_app_version)
+      if( parseInt(nativeApplicationVersion) < parseInt(g_current_app_version) && (g_show_update_warning == 1)  ){
+        Alert.alert(
+          'App Update',
+          g_update_warning,
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                console.log('We are doing nothing');
+              },
+            },
+            {
+              text: 'Update',
+              onPress: () => {
+                Linking.openURL(g_update_link);
+              },
+            },
+          ],
+          {
+            cancelable: true,
+          },
+        );
+      }
+    };
 
   useEffect(() => {
     isMounted = true;
@@ -156,6 +173,7 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
     loadDivisions();
     loadTaxZoneCircles();
     loadTaxAmount();
+
     return () => { isMounted = false };
   }, [navigation]);
 

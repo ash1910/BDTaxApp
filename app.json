@@ -2,7 +2,7 @@
   "expo": {
     "name": "BDTax",
     "slug": "BDTax",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -18,12 +18,12 @@
     ],
     "ios": {
       "bundleIdentifier": "com.bdtaxbd.app",
-      "buildNumber": "4.0.0",
+      "buildNumber": "1",
       "supportsTablet": true
     },
     "android": {
       "package": "com.bdtaxbd.app",
-      "versionCode": 4,
+      "versionCode": 9,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
