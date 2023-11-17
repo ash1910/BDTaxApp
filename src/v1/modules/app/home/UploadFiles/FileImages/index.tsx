@@ -3,7 +3,6 @@ import React from 'react';
 import {Image, View} from 'react-native';
 import {Text, Box, HStack, ScrollView, VStack, IconButton, Center} from 'native-base';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import { Feather } from "@expo/vector-icons";
 //import Pdf from 'react-native-pdf';
 import {icons} from '../../../../../assets/icons';
 
@@ -150,7 +149,7 @@ const FileImages = ({
                   variant="solid"
                   colorScheme={'danger'}
                   key={file.id}
-                  icon={<Feather name="trash" size={16} />}
+                  icon={<Image source={icons.trash} style={{tintColor: 'white', width: 16, height: 16}} />}
                 />
                 <IconButton
                   key={`FIIC2${file.id}`}
@@ -162,7 +161,7 @@ const FileImages = ({
                   variant="solid"
                   colorScheme={'danger'}
                   key={file.id}
-                  icon={<Feather name="download" size={16} />}
+                  icon={<Image source={icons.download} style={{tintColor: 'white', width: 16, height: 16}} />}
                 />
               </VStack>
             );

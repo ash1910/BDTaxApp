@@ -4,7 +4,6 @@ import {Alert, ScrollView, View, Image, Modal, StyleSheet, ActivityIndicator, Li
 import {width, height} from '../../../../utils/validator';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {icons} from '../../../../assets/icons';
-import { Feather } from "@expo/vector-icons";
 import { updateCurrentUser } from "../../../../functions/auth";
 import { getPackages, getReloadPaymentGateway, getTaxAmount, saveCouponCode, getPaymentMessage } from "../../../../requests/User";
 import PaymentGateway from '../PaymentGateway';
@@ -375,7 +374,7 @@ const Payment = ({onComplete, onLoading : setLoading, onFullScreen}: Props) => {
                       <VStack space={1} mt={3} mb={1} ml={6} mr={2}>
                       {x.additional_desc?.map(y => {
                           return (
-                            <Text textAlign={'left'} fontSize={12}><Feather name="arrow-right-circle" size={12} /> {y.ades}</Text>
+                            <Text textAlign={'left'} fontSize={12}><Image source={icons.nextButton} style={{width: 12, height: 12}} /> {y.ades}</Text>
                             );
                       })}
                       </VStack>

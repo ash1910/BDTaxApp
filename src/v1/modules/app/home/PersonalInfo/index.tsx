@@ -1,11 +1,10 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Alert, Linking} from 'react-native';
-//import {useDispatch, useSelector} from 'react-redux';
+import {Image, Alert, Linking} from 'react-native';
 import {useFormik} from 'formik';
 import * as Yup from 'yup';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Feather } from "@expo/vector-icons";
 import * as Application from 'expo-application';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {
   Button,
@@ -24,6 +23,7 @@ import {
 import { getDivisions, getProfile, getAreas, saveProfile, getTaxAmount, getTaxZoneCircles } from "../../../../requests/User";
 import { AuthContext } from "../../../../providers/AuthProvider";
 import { updateCurrentUser } from "../../../../functions/auth";
+import {icons} from '../../../../assets/icons';
 
 type Props = {
   onComplete: () => void;
@@ -68,9 +68,6 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
           });
         });
         await setDivisions(divList);
-        //let districtList = divisionList.find(x => x.id === profile?.DivisionId)?.dis;
-        //alert(profile?.DivisionId)
-        //alert(JSON.stringify(disList, null, 5))
         await setDistricts(disList);
       }
     }
@@ -352,21 +349,12 @@ const PersonalInfo = ({onComplete, onLoading : setLoading, navigation}: Props) =
 
         <VStack space={2}>
           <Text>Please enter your date of birth*</Text>
-          {/* <Input
-            size="md"
-            value={formik.values.DOB}
-            onChangeText={formik.handleChange('DOB')}
-            onBlur={formik.handleBlur('DOB')}
-            placeholder="DD-MM-YYYY"
-            borderColor="gray.300"
-          /> */}
           <HStack space={2}>
             <Center>{formik.values.DOB ? getDOBDDMMYYYY(formik.values.DOB) : "DD-MM-YYYY"}</Center>
-            {/* <Button onPress={() => setShowDatePicker(true)}></Button> */}
-            <IconButton
-                  onPress={() => setShowDatePicker(Platform.OS !== 'ios' ? true : showDatePicker === true ? false : true)}
-                  icon={<Feather name="calendar" size={16} />}
-                />
+            <TouchableOpacity  
+              onPress={() => setShowDatePicker(Platform.OS !== 'ios' ? true : showDatePicker === true ? false : true)}>
+              <Image source={icons.calendar}  style={{width: 16, height: 16}} />
+            </TouchableOpacity>
           </HStack>
           {showDatePicker && (<DateTimePicker
             value={new Date(formik.values.DOB || '2000-01-01')} 

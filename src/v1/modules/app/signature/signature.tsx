@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
-import { StyleSheet, View, Alert, TouchableOpacity, Modal, ActivityIndicator } from "react-native";
+import { StyleSheet, View, Alert, TouchableOpacity, Modal, ActivityIndicator, Image as ImageReactNative } from "react-native";
 import { Center, Spinner, Text, Button, Checkbox, HStack, Box, VStack, Image } from 'native-base';
-import { Feather } from "@expo/vector-icons";
+import {icons} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import SignatureScreen from "react-native-signature-canvas";
 import * as FileSystem from "expo-file-system";
@@ -123,8 +123,8 @@ const Sign = () => {
                 Tax Owed: {auth?.CurrentUser?.tax_amount || '0.00'} BDT
                 </Text>
                 <TouchableOpacity  
-                onPress={() => navigation.goBack()}>
-                <Feather name="x-circle" size={26} color={'white'} />
+                  onPress={() => navigation.goBack()}>
+                  <ImageReactNative source={icons.remove} style={{tintColor: 'white', width: 26, height: 26}} />
                 </TouchableOpacity>
             </HStack>
         </Box>

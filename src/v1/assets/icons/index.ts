@@ -26,6 +26,11 @@ import page3_bg_top from './page3_bg_top.png';
 import bdtax_logo from './bdtax_logo.png';
 import pag2_bg_with_shadow from './pag2_bg_with_shadow.png';
 import chat from './chat.png';
+import calendar from './calendar.png';
+import remove from './remove.png';
+import nextButton from './next-button.png';
+import download from './download.png';
+import trash from './trash.png';
 
 export const icons = {
   splash,
@@ -55,5 +60,10 @@ export const icons = {
   bdtax_logo,
   page3_bg_top,
   pag2_bg_with_shadow,
-  chat
+  chat,
+  calendar,
+  remove,
+  nextButton,
+  download,
+  trash
 };

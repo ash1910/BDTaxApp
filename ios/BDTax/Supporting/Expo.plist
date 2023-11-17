@@ -8,9 +8,9 @@
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
-    <key>EXUpdatesSDKVersion</key>
-    <string>45.0.0</string>
+    <key>EXUpdatesRuntimeVersion</key>
+    <string>exposdk:48.0.0</string>
     <key>EXUpdatesURL</key>
-    <string>https://exp.host/@ashraful1910/BDTax</string>
+    <string>https://u.expo.dev/c89cc165-d89a-4714-bd39-0379179dcdf0</string>
   </dict>
 </plist>

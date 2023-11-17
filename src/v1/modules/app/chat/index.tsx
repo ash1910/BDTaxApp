@@ -1,7 +1,7 @@
 import {Text, VStack, HStack, Box} from 'native-base';
-import {ActivityIndicator, TouchableOpacity} from 'react-native';
+import {ActivityIndicator, TouchableOpacity, Image} from 'react-native';
 import React, {useContext} from 'react';
-import { Feather } from "@expo/vector-icons";
+import {icons} from '../../../assets/icons';
 import {useNavigation} from '@react-navigation/native';
 import {WebView} from "react-native-webview";
 import { AuthContext } from "../../../providers/AuthProvider";
@@ -28,7 +28,7 @@ const ChatScreen = (props) => {
         </Text>
         <TouchableOpacity  
           onPress={() => navigation.goBack()}>
-          <Feather name="x-circle" size={26} color={'white'} />
+          <Image source={icons.remove} style={{tintColor: 'white', width: 26, height: 26}} />
         </TouchableOpacity>
       </HStack>
       <WebView 

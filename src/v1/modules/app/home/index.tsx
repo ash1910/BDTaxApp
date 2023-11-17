@@ -3,9 +3,6 @@ import {Box, HStack, ScrollView, Text, View, VStack, Center, Spinner} from 'nati
 import React, {useState, useContext, useEffect} from 'react';
 import {Image, ActivityIndicator} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import { Feather } from "@expo/vector-icons";
-import {WebView} from "react-native-webview";
-//import {useSelector} from 'react-redux';
 
 import {APP_NAVIGATION, AppNavigationParams} from '../../../typings/navigation';
 import {icons} from '../../../assets/icons';
@@ -122,20 +119,13 @@ const HomeScreen = ({navigation}: Props) => {
         ) : (
           <TouchableOpacity  
             onPress={() => setShowChat(false)}>
-            <Feather name="x-circle" size={26} color={'white'} />
+            <Image source={icons.remove} style={{tintColor: 'white', width: 26, height: 26}} />
           </TouchableOpacity>
         )}
         </HStack>
         
       </HStack>
       }
-      {/* <Box flex={1} style={{display: showChat ? 'flex' : 'none'}}>
-        <WebView 
-            renderLoading={ActivityIndicatorLoadingView}
-            style={{ flex : 1 }} 
-            source={{uri: 'https://www.bdtax.com.bd/site/livechat'}}
-        />
-      </Box> */}
       <VStack flex={1} backgroundColor={'white'} borderTopRadius={'lg'} style={{display: showChat ? 'none' : 'flex'}}>
         {showProgressStep && 
         <ProgressStep

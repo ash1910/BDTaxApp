@@ -17,13 +17,14 @@ const UserFormSelectionScreen = () => {
   const [Q2, setQ2] = useState("Y");
   const [Q3, setQ3] = useState("Y");
   const [Q4, setQ4] = useState("Y");
+  const [Q5, setQ5] = useState("Y");
   const scrollView = useRef<ScrollView>(null);
 
   let isMounted = true;
 
   const saveUserFormSelection = async () => {
     setLoading(true);
-    let response = await sendUserFormSelectionQA({q1: Q1, q2: Q2, q3: Q3, q4: Q4});
+    let response = await sendUserFormSelectionQA({q1: Q1, q2: Q2, q3: Q3, q4: Q4, q5: Q5});
     //alert(JSON.stringify(response, null, 5))
     if (response.ok && response.data && response.data?.success == true) {
       if (isMounted){
@@ -117,6 +118,15 @@ const UserFormSelectionScreen = () => {
             <HStack space={3} alignItems="center">
                 <Box width={'60%'} _text={{fontWeight: 'bold'}}>4. Do you own/invest any house property or apartment in any city corporation area?</Box>
                 <Radio.Group alignItems={'flex-end'} name="Q4" value={Q4} onChange={nextValue => setQ4(nextValue)}>
+                    <HStack space={3}>
+                        <Radio value="Y">Yes</Radio>
+                        <Radio value="N">No</Radio>
+                    </HStack>
+                </Radio.Group>
+            </HStack>
+            <HStack space={3} alignItems="center">
+                <Box width={'60%'} _text={{fontWeight: 'bold'}}>5. Do you have any Foreign income?</Box>
+                <Radio.Group alignItems={'flex-end'} name="Q5" value={Q5} onChange={nextValue => setQ5(nextValue)}>
                     <HStack space={3}>
                         <Radio value="Y">Yes</Radio>
                         <Radio value="N">No</Radio>
