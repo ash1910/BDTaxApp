@@ -1,8 +1,8 @@
 import {Button, VStack, Box} from 'native-base';
 import {TouchableOpacity, Image, Alert} from 'react-native';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
-import { userUnsubscribe } from "../../../requests/User";
+import { userUnsubscribe, getAckFile } from "../../../requests/User";
 
 import {APP_NAVIGATION} from '../../../typings/navigation';
 import { doLogout } from "../../../functions/auth";
@@ -12,6 +12,29 @@ import {width, height} from '../../../utils/validator';
 
 const ProfileScreen = (props) => {
   let auth = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const [fileId, setFileId] = useState(null);
+
+  let isMounted = true;
+
+  const loadAckFile = async () => {
+    setLoading(true);
+    let response = await getAckFile();
+    //alert(JSON.stringify(response, null, 5))
+    if (response.ok && response.data && response.data?.success == true) {
+      if (isMounted){
+        setFileId(response.data.data?.id);
+      }
+    } 
+    else{
+      //Alert.alert("",response.data.message?.error);
+    }
+    if (isMounted){
+      setLoading(false);
+    }
+  };
+
+  //alert(JSON.stringify(auth, null, 5))
   const navigation = useNavigation();
 
   const handleUnsubscribe = () => {
@@ -46,6 +69,12 @@ const ProfileScreen = (props) => {
     );
   };
 
+  useEffect(() => {
+    isMounted = true;
+    loadAckFile();
+    return () => { isMounted = false };
+  }, [navigation]);
+
   return (
     <VStack flex={1} space={2}>
         <Box>
@@ -67,10 +96,16 @@ const ProfileScreen = (props) => {
           </Box>
         </Box>
       <VStack p={4} mt={4} space={2}>
-        <Button
-          onPress={() => props.navigation.navigate(APP_NAVIGATION.ACKNOWLEDGEMENT)}>
-          {auth?.CurrentUser?.tax_year ? `Acknowledgement Slip (${auth?.CurrentUser?.tax_year})` : "Acknowledgement Slip"}
-        </Button>
+        
+        {fileId ? (
+          <Button
+            onPress={() => props.navigation.navigate(APP_NAVIGATION.ACKNOWLEDGEMENT)}>
+            {auth?.CurrentUser?.tax_year ? `Acknowledgement Slip (${auth?.CurrentUser?.tax_year})` : "Acknowledgement Slip"}
+          </Button>
+        ) : (
+          <></>
+          )
+          }
         <Button
           onPress={() => props.navigation.navigate(APP_NAVIGATION.ORDERSTATUS)}>
           {auth?.CurrentUser?.tax_year ? `Order Status (${auth?.CurrentUser?.tax_year})` : "Order Status"}
