@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Image, TouchableOpacity} from 'react-native';
 import {Box, HStack, Text} from 'native-base';
 import {icons} from '../../../../assets/icons';
@@ -18,23 +18,47 @@ const PaymentGateway = ({
     onReturn,
 }: Props) => {
     let auth = useContext(AuthContext);
+    const [gatewayStatus, setGatewayStatus] = useState("NoteSure");
 
     function _onNavigationStateChange(webViewState){
         console.log(webViewState);
+        //Bkash LOG 1 {"canGoBack": false, "canGoForward": false, "loading": false, "navigationType": "other", "target": 5005, "title": "Payment only", "url": "https://api.bdtax.com.bd/public/api/validate-bkash?paymentID=TR0011x8T3jsu1700283761277&status=success&apiVersion=1.2.0-beta"}
+        //Bkash LOG 2 {"canGoBack": false, "canGoForward": false, "loading": true, "navigationType": "other", "target": 5005, "title": "Payment only", "url": "https://api.bdtax.com.bd/public/api/end-bkash"}
+        //Bkash LOG 3 {"canGoBack": true, "canGoForward": false, "loading": false, "target": 5005, "title": "", "url": "https://api.bdtax.com.bd/public/api/end-bkash"}
+        
         let uri = webViewState.url;
 
+        if(gatewayName == 'bkash'){
             // when cancel : return URL : https://devapi.bdtax.com.bd/public/api/validate-bkash?paymentID=TR0011JS1653995194169&status=cancel&apiVersion=1.2.0-beta
-            if(uri.startsWith(BACKEND_BASE + "end-bkash")){
+            // sometimes only return URL : https://api.bdtax.com.bd/public/api/end-bkash   (there are no status)
+            if(uri.startsWith(BACKEND_BASE + "end-bkash")){ // return payment page only from here
                 let capturedStatus = /status=([^&]+)/.exec(uri);
                 let statusBk = capturedStatus ? capturedStatus[1] : ''; 
                 if( statusBk == "cancel"){
-                    onReturn('Cancel');
+                    setGatewayStatus('Cancel');
+                    onReturn(gatewayStatus);
                 }
                 else{
-                    onReturn('NoteSure');
+                    onReturn(gatewayStatus);
                 }
             }
-            else if(uri.startsWith(BACKEND_BASE + "success")){
+            // when success : return URL : https://api.bdtax.com.bd/public/api/validate-bkash?paymentID=TR0011x8T3jsu1700283761277&status=success&apiVersion=1.2.0-beta
+            else if(uri.startsWith(BACKEND_BASE + "validate-bkash")){
+                let capturedStatus = /status=([^&]+)/.exec(uri);
+                let statusBk = capturedStatus ? capturedStatus[1] : ''; 
+                if( statusBk == "cancel"){
+                    setGatewayStatus('Cancel');
+                }
+                else if( statusBk == "success"){
+                    setGatewayStatus('Success');
+                }
+                else{
+                    setGatewayStatus('NoteSure');
+                }
+            }
+        }
+        else{
+            if(uri.startsWith(BACKEND_BASE + "success")){
                 onReturn('SuccessSSL');
             }
             else if(uri.startsWith(BACKEND_BASE + "fail")){
@@ -46,6 +70,7 @@ const PaymentGateway = ({
             else if(uri.startsWith(BACKEND_BASE)){
                 onReturn('NoteSure');
             }
+        }
             
     };
 
