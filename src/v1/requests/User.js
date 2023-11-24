@@ -21,6 +21,7 @@ const getRegister = (values) => {
       password: values.password,
       c_password: values.c_password,
       hearaboutus: values.hearaboutus,
+      source : Platform.OS === 'ios' ? "ios" : 'android',
     }
   );
 };
@@ -129,7 +130,7 @@ const deleteFile = async(file_id) => {
 };
 
 const getPackages = () => {
-  return R3Client.get("get-user-package");
+  return R3Client.get(`get-user-package?source=${Platform.OS === 'ios' ? "ios" : 'android'}`);
 };
 
 const getReloadPaymentGateway = async(package_id) => {
