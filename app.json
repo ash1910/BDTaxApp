@@ -2,7 +2,7 @@
   "expo": {
     "name": "BDTax",
     "slug": "BDTax",
-    "version": "1.0.6",
+    "version": "1.0.8",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,7 +19,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.bdtaxbd.app",
-      "buildNumber": "2",
+      "buildNumber": "1",
       "supportsTablet": true,
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
@@ -28,7 +28,7 @@
     },
     "android": {
       "package": "com.bdtaxbd.app",
-      "versionCode": 10,
+      "versionCode": 11,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
